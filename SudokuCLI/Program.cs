@@ -1,7 +1,7 @@
-﻿using System;
+﻿using SudokuModel;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using SudokuModel;
 
 namespace SudokuCLI
 {
