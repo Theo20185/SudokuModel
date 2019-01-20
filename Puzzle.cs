@@ -112,21 +112,11 @@ namespace SudokuModel
 
         public Puzzle Solve()
         {
-            Debug.WriteLine("\n" + this.ToString());
-
             if (!Validate())
-            {
-                Debug.WriteLine("\nThis puzzle is not valid.");
                 return null;
-            }
 
             if (IsSolved())
-            {
-                Debug.WriteLine("\nThis puzzle is solved.");
                 return this;
-            }
-
-            var copyPuzzle = Copy();
 
             var crossHatch = true;
             var crossHatched = false;
@@ -135,82 +125,47 @@ namespace SudokuModel
             {
                 crossHatch = false;
 
-                foreach (Row row in copyPuzzle.Rows)
+                foreach (Row row in Rows)
                     if (row.Crosshatch())
                     {
-                        Debug.WriteLine("Row {0}", row.Index);
                         crossHatch = true;
                         crossHatched = true;
                     }
 
-                foreach (Column column in copyPuzzle.Columns)
+                foreach (Column column in Columns)
                     if (column.Crosshatch())
                     {
-                        Debug.WriteLine("Column {0}", column.Index);
                         crossHatch = true;
                         crossHatched = true;
                     }
 
-                foreach (Box box in copyPuzzle.Boxes)
+                foreach (Box box in Boxes)
                     if (box.Crosshatch())
                     {
-                        Debug.WriteLine("Box {0}", box.Index);
                         crossHatched = true;
                         crossHatch = true;
                     }
             }
 
             if (crossHatched)
-            {
-                Debug.WriteLine("\n" + copyPuzzle.ToString());
+                return Solve();
 
-                if (!copyPuzzle.Validate())
-                {
-                    Debug.WriteLine("\nThis puzzle is not valid.");
-                    return null;
-                }
-
-                if (copyPuzzle.IsSolved())
-                {
-                    Debug.WriteLine("\nThis puzzle is solved.");
-                    return copyPuzzle;
-                }
-
-                var crossHatchSolution = copyPuzzle.Solve();
-                if (crossHatchSolution != null)
-                    return crossHatchSolution;
-            }
-
-            var minimumCell = copyPuzzle.MinimumPossibilities();
-
-            if (minimumCell != null)
-            {
-                Debug.WriteLine("\nMinimum Possibilities (Row, Column): ({0}, {1}) {2}",
-                    minimumCell.Row.Index,
-                    minimumCell.Column.Index,
-                    minimumCell.Possibilities().Count);
-            }
-
+            var copyPuzzle = Copy();
             var possibilitiesOrdered = new List<Cell>();
             
             for(int i = 1; i < 10; i++)
             {
-                foreach(Cell cell in Cells)
-                {
-                    if (cell.Possibilities().Count == i)
-                        possibilitiesOrdered.Add(cell);
-                }
+                foreach(Cell cell in copyPuzzle.Cells.FindAll(x => x.Possibilities().Count == i))
+                    possibilitiesOrdered.Add(cell);
             }
 
             foreach (Cell cell in possibilitiesOrdered)
             {
-                var copyCell = copyPuzzle.Cells.Find(x => x.Row.Index == cell.Row.Index && x.Column.Index == cell.Column.Index);
                 var possibilities = cell.Possibilities();
 
                 foreach(int possibility in possibilities)
                 {
-                    copyCell.Value = possibility;
-
+                    cell.Value = possibility;
                     var solution = copyPuzzle.Solve();
 
                     if (solution != null)

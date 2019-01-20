@@ -61,8 +61,6 @@ namespace SudokuModel
 
                 if (count == 1 && tCell != null)
                 {
-                    Debug.WriteLine("\nPlacing value {2} in cell ({0},{1}) from crosshatch process.", tCell.Row.Index, tCell.Column.Index, i);
-
                     tCell.Value = i;
                     return true;
                 }
