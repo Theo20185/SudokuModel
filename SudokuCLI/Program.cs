@@ -201,17 +201,23 @@ namespace SudokuCLI
 
             Console.Out.WriteLine("Solving...");
 
+            var preSolve = DateTime.Now;
             var solution = _sudoku.Solve();
+            var postSolve = DateTime.Now;
+            var span = postSolve - preSolve;
 
             if (solution != null)
                 _sudoku = solution;
-            else
-            {
-                Header();
 
-                Console.Out.Write("\nError: Unable to find solution. Press enter to continue...");
-                Console.ReadLine();
-            }
+            Header();
+
+            if (solution != null)
+                Console.Out.Write("\nFound solution in: {0} seconds.", span.TotalSeconds.ToString());
+            else
+                Console.Out.Write("\nError: Unable to find solution.");
+
+            Console.Out.Write(" Press enter to continue...");
+            Console.ReadLine();
         }
 
         private static string PossibilitiesToString(List<int> possibilities)
